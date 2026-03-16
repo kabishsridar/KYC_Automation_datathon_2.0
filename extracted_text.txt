@@ -1,0 +1,120 @@
+Autonomous KYC for 
+cross functional (banking, insurance, mortgage, HCP )
+Autonomous 
+KYC using
+ AI to perform Know Your Customer. 
+ 
+Starts
+ data collection to 
+validate
+ and verify the customer processes
+ with minimal human intervention. The goal is to make customer onboarding and compliance 
+faster, more 
+accurate
+, and cost-efficient
+ while still meeting regulatory requirements.
+What “Autonomous KYC” Means
+Traditional KYC 
+requires
+ manual checks of documents
+ and
+ 
+databases;
+ 
+Autonomous KYC uses 
+AI-driven workflows
+ that can:
+Collect customer information automatically
+Verify identity using AI
+Screen customers against risk databases
+Assess risk level
+Approve or escalate cases automatically
+Human intervention only happens 
+in
+ 
+high-risk or 
+exception
+ cases
+.
+Autonomous KYC 
+Process
+1. Customer Data Capture
+Sources:
+Collect the documents
+Data captured:
+Name
+Address
+Date of Birth
+ID 
+Proof 
+documents
+ (
+Pancard
+ , 
+Aadhar,
+ Passport, Driving 
+License)
+Selfie / biometric data
+Phone & email
+Technologies:
+OCR
+LLM
+Multimodal 
+2. Identity Verification
+Automated verification includes:
+Document Verification
+Passport
+Aadhaar
+PAN
+Driving License
+AI checks:
+Document authenticity
+Tampering detection
+Expiry validation
+Face Verification
+Selfie vs ID photo
+Liveness detection
+Technologies:
+Computer Vision
+Facial Recognitio
+n
+Example:
+Risk Score
+Category
+Action
+0–30
+Low
+Auto approval
+31–70
+Medium
+Additional checks
+71–100
+High
+Manual review
+6. Decision Automation
+Rules + AI models decide:
+Possible outcomes:
+✅
+ Auto approve onboarding
+⚠
+ Request additional documents
+🔍
+ Escalate for manual compliance review
+❌
+ Reject customer
+7. Continuous / Perpetual KYC
+Autonomous KYC continues monitoring after onboarding:
+Checks include:
+Periodic document refresh
+Example End-to-End Workflow
+1) 
+Customer opens 
+the web portal
+2)
+ Uploads 
+ID Proof documents
+3) Perform Interview with customer and 
+AI verifies document authenticity
+ 
+4) 
+Use web camera and perform the verification process
