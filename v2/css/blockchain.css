@@ -1,0 +1,26 @@
+/* Blockchain Specific Styles */
+.blockchain-meta {
+  background: rgba(6, 182, 212, 0.1); padding: 12px 24px; border-radius: 16px; font-size: 0.9rem; color: var(--accent);
+  display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700;
+}
+
+.security-shield {
+  width: 80px; height: 80px; background: rgba(139, 92, 246, 0.2); border-radius: 20px;
+  display: flex; align-items: center; justify-content: center; color: var(--primary); margin-bottom: 16px;
+}
+.security-shield span { font-size: 2.5rem; }
+
+.hash-box {
+  background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 12px; font-family: monospace; font-size: 1rem;
+  color: var(--accent); border: 1px solid rgba(6, 182, 212, 0.3); margin-top: 16px;
+}
+
+.ledger-anim { display: flex; gap: 16px; margin-bottom: 24px; }
+.node { width: 32px; height: 32px; background: var(--border); border-radius: 8px; position: relative; }
+.node::after { content: ''; position: absolute; right: -25px; top: 19px; width: 24px; height: 2px; background: var(--border); }
+.node:last-child::after { display: none; }
+.node.active { background: var(--accent); box-shadow: 0 0 20px var(--accent); animation: flicker 0.5s infinite; }
+@keyframes flicker { 50% { opacity: 0.7; } }
+
+.progress-bar-container { width: 100%; max-width: 400px; height: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+.progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.1s linear; }

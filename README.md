@@ -9,6 +9,7 @@ An AI-driven Automated Know Your Customer (KYC) application designed to perform 
 *   **AI Data Extraction**: Automated OCR to extract Name, Date of Birth, and ID Number from uploaded documents.
 *   **Face Verification**: Automated comparison between the live selfie and the face detected on the ID document.
 *   **Intelligent Risk Assessment**: Rule-based engine that evaluates extracted data, face match confidence, and missing fields to generate a comprehensive risk score (0-100) and an automated decision (Auto Approve, Request More Docs, or Manual Review).
+*   **Voice-Enabled Banking MVP (NexaFi)**: A professional, blockchain-secured voice interface for sending money, depositing cash via kiosk, and checking balances, specifically designed for illiterate users with bilingual (English/Tamil) guidance.
 
 ## Tech Stack
 
@@ -27,8 +28,6 @@ Ensure you have the following installed on your system:
 
 ## Getting Started
 
-### 1. Backend Setup (FastAPI)
-
 Navigate to the root directory, create a virtual environment, and install the Python dependencies.
 
 ```bash
@@ -43,10 +42,20 @@ venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
-
-# Navigate to the backend directory to run the server
-cd backend
 ```
+
+### 2. Run NexaFi Voice Banking MVP (Kiosk)
+
+The MVP is located in the `v2/` directory and can be served using any local web server.
+
+```bash
+cd v2
+# Using Python's built-in server
+python -m http.server 8080
+```
+Open your browser at `http://localhost:8080`.
+
+### 3. Backend Setup (FastAPI)
 
 Run the FastAPI server:
 
@@ -86,20 +95,18 @@ The frontend application will be accessible in your browser at `http://localhost
 
 ```
 datathon_2.0/
+├── v2/                       # NexaFi Voice Banking MVP
+│   ├── css/                  # Modular styles (Base, Layout, Components, Blockchain)
+│   ├── js/                   # Modular logic (Voice, Ledger, Navigation, Flows)
+│   └── index.html            # Main Entry Point
 ├── backend/                  # Python FastAPI application
 │   ├── main.py               # API endpoints
 │   └── services/             # AI processing logic
-│       ├── face_service.py   # Face matching & liveness
-│       ├── ocr_service.py    # Text extraction
-│       └── risk_engine.py    # Risk score calculation
 ├── frontend/                 # React frontend application
 │   ├── src/
-│   │   ├── components/       # UI Components (Upload, Camera, Dashboard)
-│   │   ├── App.jsx           # Main application logic
-│   │   └── index.css         # Tailwind directives
-│   ├── package.json
-│   ├── tailwind.config.js
-│   └── vite.config.js
+│   │   ├── components/       # UI Components
+│   │   └── App.jsx           # Main logic
 ├── requirements.txt          # Python dependencies
+├── venv/                     # Python Virtual Environment
 └── README.md                 # Project documentation
 ```

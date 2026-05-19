@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexaFi & Autonomous KYC Suite</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0a0f1d;
+            --panel-bg: rgba(16, 22, 42, 0.7);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.3);
+            --accent: #8b5cf6;
+            --accent-glow: rgba(139, 92, 246, 0.3);
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.2);
+            --warning: #f59e0b;
+            --warning-glow: rgba(245, 158, 11, 0.2);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.2);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* Top Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(10, 15, 29, 0.8);
+            backdrop-filter: blur(12px);
+            border-b: 1px solid var(--panel-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+        }
+
+        .logo-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #ffffff, #d1d5db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-title span {
+            color: var(--primary);
+            -webkit-text-fill-color: var(--primary);
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4px;
+            border-radius: 30px;
+            border: 1px solid var(--panel-border);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
+
+        .github-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: 1px solid var(--panel-border);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .github-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1280px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Active screen toggling */
+        .app-view {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .app-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- SCREEN 1: KYC SIMULATOR --- */
+        .kyc-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .kyc-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .glass-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        .card-header {
+            margin-bottom: 24px;
+            border-b: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 16px;
+        }
+
+        .card-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .text-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: white;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .radio-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .radio-btn {
+            position: relative;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .radio-btn input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .radio-label {
+            display: block;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .radio-btn input:checked + .radio-label {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Upload Slots */
+        .upload-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .upload-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .upload-box {
+            border: 2px dashed var(--panel-border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.01);
+            position: relative;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .upload-box:hover {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.02);
+        }
+
+        .upload-box.has-file {
+            border-style: solid;
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.01);
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+
+        .upload-box:hover .upload-icon {
+            color: var(--primary);
+            transform: translateY(-4px);
+        }
+
+        .upload-box p {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .upload-box span {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 4px;
+        }
+
+        .preview-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 14px;
+        }
+
+        /* Camera Box */
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: none;
+            z-index: 10;
+        }
+
+        .camera-overlay video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-scanner {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            border-radius: 50%;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+        }
+
+        .camera-scanner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            box-shadow: 0 0 8px var(--primary);
+            animation: scanLoop 2s infinite ease-in-out;
+        }
+
+        @keyframes scanLoop {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        .camera-controls {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 15;
+        }
+
+        .btn-cam {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-cam-capture {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-cam-cancel {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Preset buttons for instant demo */
+        .presets-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--panel-border);
+        }
+
+        .presets-bar p {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .presets-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--panel-border);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-preset:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-preset.danger:hover {
+            background: var(--danger);
+            border-color: var(--danger);
+        }
+
+        /* Large Verify Action */
+        .btn-verify {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 20px var(--primary-glow);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-verify:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-verify:disabled {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* --- VERIFICATION SCREEN (LOADER/LANDMARKS) --- */
+        .processing-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 450px;
+            text-align: center;
+        }
+
+        .processing-layout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .processing-avatar-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px solid var(--panel-border);
+            overflow: hidden;
+            background: #111827;
+        }
+
+        .processing-avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .processing-avatar-container.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .processing-bridge {
+            flex-grow: 1;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .processing-bridge-flow {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--accent), transparent);
+            animation: flowLoop 1.5s infinite linear;
+        }
+
+        @keyframes flowLoop {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .scan-overlay-active {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .scan-dots {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(var(--primary) 1.5px, transparent 1.5px);
+            background-size: 12px 12px;
+            opacity: 0.15;
+        }
+
+        .console-box {
+            width: 100%;
+            max-width: 650px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 13px;
+            height: 160px;
+            overflow-y: auto;
+            color: #34d399;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .console-line {
+            margin-bottom: 6px;
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .console-line.info { color: #60a5fa; }
+        .console-line.success { color: #34d399; }
+        .console-line.warn { color: #fbbf24; }
+
+        /* --- RESULTS SIDEBAR / PANEL --- */
+        .results-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .status-header-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .status-header-badge.approved {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status-header-badge.review {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .status-header-badge.rejected {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .risk-gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .gauge-circle {
+            position: relative;
+            width: 140px;
+            height: 140px;
+        }
+
+        .gauge-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 10;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke-width: 10;
+            stroke-linecap: round;
+            stroke-dasharray: 377;
+            stroke-dashoffset: 377;
+            transition: stroke-dashoffset 1s ease-in-out;
+        }
+
+        .gauge-fill.low { stroke: var(--success); filter: drop-shadow(0 0 6px var(--success-glow)); }
+        .gauge-fill.medium { stroke: var(--warning); filter: drop-shadow(0 0 6px var(--warning-glow)); }
+        .gauge-fill.high { stroke: var(--danger); filter: drop-shadow(0 0 6px var(--danger-glow)); }
+
+        .gauge-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .gauge-score {
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .gauge-lbl {
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .data-table {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .data-value {
+            font-weight: 600;
+            color: white;
+            text-align: right;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            padding: 8px 0;
+        }
+
+        .checklist-item.pass i { color: var(--success); }
+        .checklist-item.fail i { color: var(--danger); }
+        .checklist-item.warn i { color: var(--warning); }
+
+        .checklist-item span {
+            color: var(--text-main);
+        }
+
+        /* --- SCREEN 2: NEXAFI KIOSK PORTAL --- */
+        .kiosk-portal-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 30px;
+            height: calc(100vh - 160px);
+        }
+
+        @media (max-width: 900px) {
+            .kiosk-portal-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+
+        .kiosk-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .ledger-info-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .blockchain-nodes {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .node-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .node-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 6px var(--success);
+        }
+
+        .node-status.offline {
+            background: var(--danger);
+            box-shadow: 0 0 6px var(--danger);
+        }
+
+        /* Tablet frame for embedding NexaFi */
+        .tablet-frame-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, rgba(16, 22, 42, 0.4) 0%, rgba(10, 15, 29, 0.8) 100%);
+            border-radius: 24px;
+            border: 1px solid var(--panel-border);
+            padding: 30px;
+            position: relative;
+        }
+
+        .tablet-mockup {
+            width: 100%;
+            max-width: 480px;
+            height: 780px;
+            background: #1e293b;
+            border-radius: 36px;
+            border: 12px solid #0f172a;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tablet-camera-notch {
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 6px;
+            background: #0f172a;
+            border-radius: 3px;
+            z-index: 10;
+        }
+
+        .tablet-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        /* Info Banners */
+        .info-alert {
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .info-alert i {
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .info-alert-content h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .info-alert-content p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* SVG Vector Cards for Sample Documents */
+        .sample-id-svg {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-align: left;
+        }
+
+        .sample-id-svg-pan {
+            background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
+        }
+
+        .sample-id-svg-dl {
+            background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+        }
+
+        /* Custom Landmarking Canvas overlay */
+        .landmark-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 12;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Nav -->
+    <header>
+        <div class="logo">
+            <span class="material-symbols-outlined logo-icon">shield_lock</span>
+            <div class="logo-title">NexaFi<span>.Suite</span></div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchView('kyc')">
+                <span class="material-symbols-outlined">badge</span> Autonomous KYC
+            </button>
+            <button class="tab-btn" onclick="switchView('nexa')">
+                <span class="material-symbols-outlined">spatial_audio</span> NexaFi Kiosk
+            </button>
+        </div>
+
+        <a href="https://github.com/kabishsridar/datathon_2.0" target="_blank" class="github-btn">
+            <i data-lucide="github"></i> View GitHub
+        </a>
+    </header>
+
+    <div class="container">
+        
+        <!-- ==============================================
+             SCREEN 1: AUTONOMOUS KYC SIMULATOR
+             ============================================== -->
+        <div id="view-kyc" class="app-view active">
+            
+            <div class="info-alert">
+                <span class="material-symbols-outlined">info</span>
+                <div class="info-alert-content">
+                    <h4>Direct Access & Serverless Sandbox</h4>
+                    <p>This sandbox simulates our complete machine learning pipeline—including document OCR, facial matching, liveness detection, and risk scoring. You can test live using your webcam or trigger presets to evaluate instant low, medium, and high-risk behaviors directly in the browser.</p>
+                </div>
+            </div>
+
+            <!-- Presets Bar -->
+            <div class="presets-bar">
+                <p>💡 Quick Sandbox Scenarios:</p>
+                <div class="presets-btns">
+                    <button class="btn-preset" onclick="loadScenario('approved')">
+                        <span class="material-symbols-outlined">verified</span> Low Risk (Auto Approve)
+                    </button>
+                    <button class="btn-preset warning" onclick="loadScenario('review')">
+                        <span class="material-symbols-outlined">warning</span> Medium Risk (Manual Review)
+                    </button>
+                    <button class="btn-preset danger" onclick="loadScenario('rejected')">
+                        <span class="material-symbols-outlined">report</span> High Risk (Auto Reject)
+                    </button>
+                </div>
+            </div>
+
+            <div class="kyc-grid">
+                
+                <!-- Main Form / Cam Card -->
+                <div class="glass-card">
+                    
+                    <!-- Sandbox Form View -->
+                    <div id="kyc-form-view">
+                        <div class="card-header">
+                            <h2><span class="material-symbols-outlined" style="color: var(--primary);">account_circle</span> Identity Submission</h2>
+                            <p>Provide basic details and upload credentials for verification</p>
+                        </div>
+
+                        <!-- Step 0: Basic Info -->
+                        <div class="input-group">
+                            <label for="user-fullname">Legal Full Name</label>
+                            <input type="text" id="user-fullname" class="text-input" placeholder="e.g. Rajesh Kumar" value="Rajesh Kumar">
+                        </div>
+
+                        <!-- Document Type -->
+                        <div class="input-group">
+                            <label>Verify Document Type</label>
+                            <div class="radio-grid">
+                                <label class="radio-btn">
+                                    <input type="radio" name="doc-type" value="aadhaar" checked onchange="updateDocLabels()">
+                                    <span class="radio-label">Aadhaar Card</span>
+                                </label>
+                                <label class="radio-btn">
+                                    <input type="radio" name="doc-type" value="pan" onchange="updateDocLabels()">
+                                    <span class="radio-label">PAN Card</span>
+                                </label>
+                                <label class="radio-btn">
+                                    <input type="radio" name="doc-type" value="passport" onchange="updateDocLabels()">
+                                    <span class="radio-label">Passport</span>
+                                </label>
+                                <label class="radio-btn">
+                                    <input type="radio" name="doc-type" value="dl" onchange="updateDocLabels()">
+                                    <span class="radio-label">Driving Lic.</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Upload Slots (Side by side) -->
+                        <div class="upload-row">
+                            
+                            <!-- Box 1: ID Document -->
+                            <div class="upload-box" id="box-document" onclick="triggerFileInput('file-document')">
+                                <span class="material-symbols-outlined upload-icon" id="doc-box-icon">id_card</span>
+                                <p id="doc-box-text">Upload Identity Document</p>
+                                <span id="doc-box-sub">Click to browse (PNG, JPG)</span>
+                                <input type="file" id="file-document" style="display: none;" accept="image/*" onchange="handleFileSelected(this, 'document')">
+                                <div id="preview-document-container" style="display: none; width:100%; height:100%; position:absolute;"></div>
+                            </div>
+
+                            <!-- Box 2: Selfie Photo -->
+                            <div class="upload-box" id="box-selfie">
+                                <div class="camera-overlay" id="cam-overlay">
+                                    <video id="video" autoplay playsinline muted></video>
+                                    <div class="camera-scanner"></div>
+                                    <canvas id="landmark-canvas" class="landmark-canvas"></canvas>
+                                    <div class="camera-controls">
+                                        <button class="btn-cam btn-cam-capture" onclick="captureSelfie(event)"><span class="material-symbols-outlined">photo_camera</span> Capture</button>
+                                        <button class="btn-cam btn-cam-cancel" onclick="closeCamera(event)">Cancel</button>
+                                    </div>
+                                </div>
+                                <div id="selfie-default-content" onclick="triggerSelfieOption()" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height:100%;">
+                                    <span class="material-symbols-outlined upload-icon">photo_camera</span>
+                                    <p>Capture Live Selfie</p>
+                                    <span>Uses system camera for liveness checks</span>
+                                </div>
+                                <input type="file" id="file-selfie" style="display: none;" accept="image/*" onchange="handleFileSelected(this, 'selfie')">
+                                <div id="preview-selfie-container" style="display: none; width:100%; height:100%; position:absolute; pointer-events: none;"></div>
+                            </div>
+
+                        </div>
+
+                        <!-- Action Button -->
+                        <button class="btn-verify" id="btn-verify-trigger" onclick="runKycPipeline()" disabled>
+                            <span class="material-symbols-outlined">security</span> VERIFY CUSTOMER PORTFOLIO
+                        </button>
+                    </div>
+
+                    <!-- Sandbox Processing Pipeline View -->
+                    <div id="kyc-processing-view" class="processing-view">
+                        <div class="card-header">
+                            <h2><span class="material-symbols-outlined pulse" style="color: var(--primary);">sync</span> AI Verification Engine</h2>
+                            <p>Decrypting payload, scanning facial structures & validating data fields...</p>
+                        </div>
+
+                        <div class="processing-layout">
+                            <div class="processing-avatar-container active" id="proc-avatar-doc">
+                                <img src="" id="proc-img-doc" alt="Document Face">
+                                <div class="scan-overlay-active"><div class="scan-dots"></div></div>
+                            </div>
+                            
+                            <div class="processing-bridge">
+                                <div class="processing-bridge-flow"></div>
+                            </div>
+
+                            <div class="processing-avatar-container active" id="proc-avatar-selfie">
+                                <img src="" id="proc-img-selfie" alt="Selfie Face">
+                                <div class="scan-overlay-active"><div class="scan-dots"></div></div>
+                            </div>
+                        </div>
+
+                        <!-- Console Logs -->
+                        <div class="console-box" id="console-logs"></div>
+                    </div>
+
+                </div>
+
+                <!-- Right Sidebar: Results / Stats -->
+                <div class="results-sidebar">
+                    
+                    <!-- Static / Default State -->
+                    <div class="glass-card" id="result-sidebar-placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; min-height: 300px;">
+                        <span class="material-symbols-outlined" style="font-size: 56px; color: var(--text-muted); margin-bottom: 16px;">policy</span>
+                        <h3 style="font-family: 'Outfit'; font-size: 18px; margin-bottom: 8px;">Decision Engine Pending</h3>
+                        <p style="font-size: 13px; color: var(--text-muted);">Please fill the customer credentials and upload files to compute risk matrices.</p>
+                    </div>
+
+                    <!-- Verified State -->
+                    <div class="glass-card" id="result-sidebar-data" style="display: none;">
+                        <div class="card-header" style="margin-bottom: 15px;">
+                            <h2><span class="material-symbols-outlined" style="color: var(--success);">verified</span> Verification Dossier</h2>
+                            <p>Computed risk score & real-time criteria audits</p>
+                        </div>
+
+                        <!-- Risk Rating Header -->
+                        <div class="status-header-badge" id="dossier-status-badge">
+                            <span class="material-symbols-outlined" id="dossier-status-icon">check_circle</span>
+                            <span id="dossier-status-text">AUTO APPROVED</span>
+                        </div>
+
+                        <!-- SVG Risk Gauge -->
+                        <div class="risk-gauge-container">
+                            <div class="gauge-circle">
+                                <svg class="gauge-svg">
+                                    <circle class="gauge-bg" cx="70" cy="70" r="60"></circle>
+                                    <circle class="gauge-fill" id="dossier-gauge-fill" cx="70" cy="70" r="60"></circle>
+                                </svg>
+                                <div class="gauge-text">
+                                    <div class="gauge-score" id="dossier-score-text">12</div>
+                                    <div class="gauge-lbl">Risk Index</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detailed extracted facts -->
+                        <h3 style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">Extracted Properties</h3>
+                        <div class="data-table" style="margin-bottom: 25px;">
+                            <div class="data-row">
+                                <span class="data-label">Extracted Name</span>
+                                <span class="data-value" id="extracted-name-val">-</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">Document ID</span>
+                                <span class="data-value" id="extracted-id-val">-</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">Facial Similarity</span>
+                                <span class="data-value" id="face-similarity-val">-</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">Liveness Authenticity</span>
+                                <span class="data-value" id="liveness-val">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Rules Evaluated -->
+                        <h3 style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">Rule Compliance Check</h3>
+                        <div class="checklist" style="margin-bottom: 25px;">
+                            <div class="checklist-item" id="rule-name">
+                                <span class="material-symbols-outlined">task_alt</span>
+                                <span>Legal Name OCR Similarity</span>
+                            </div>
+                            <div class="checklist-item" id="rule-face">
+                                <span class="material-symbols-outlined">task_alt</span>
+                                <span>Geometric Face Biometrics</span>
+                            </div>
+                            <div class="checklist-item" id="rule-expiry">
+                                <span class="material-symbols-outlined">task_alt</span>
+                                <span>Document Expiration Integrity</span>
+                            </div>
+                            <div class="checklist-item" id="rule-liveness">
+                                <span class="material-symbols-outlined">task_alt</span>
+                                <span>Live Anti-Spoof Frame Check</span>
+                            </div>
+                        </div>
+
+                        <!-- Try Again / Navigation Actions -->
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-preset" style="flex: 1; padding: 12px;" onclick="resetKycForm()">
+                                <span class="material-symbols-outlined">restart_alt</span> Reset Sandbox
+                            </button>
+                            <button id="btn-next-nexa-step" class="btn-verify" style="flex: 1.2; font-size: 13px; padding: 12px; display: none;" onclick="switchView('nexa')">
+                                Enter NexaFi Kiosk <span class="material-symbols-outlined">arrow_forward</span>
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ==============================================
+             SCREEN 2: NEXAFI VOICE KIOSK PORTAL
+             ============================================== -->
+        <div id="view-nexa" class="app-view">
+            
+            <div class="info-alert" style="margin-bottom: 25px;">
+                <span class="material-symbols-outlined">spatial_audio</span>
+                <div class="info-alert-content">
+                    <h4>NexaFi Voice Kiosk Terminal</h4>
+                    <p>Designed for illiterate users, NexaFi coordinates <strong>Tamil and English voice-guidance</strong> to help execute secure, blockchain-verified financial transactions (Deposit Cash, Send Money, Check Balance) entirely hand-held and ledger-synchronized.</p>
+                </div>
+            </div>
+
+            <div class="kiosk-portal-layout">
+                
+                <!-- Left Column: Sync Logs & Node Info -->
+                <div class="kiosk-sidebar">
+                    <div class="glass-card">
+                        <div class="card-header" style="margin-bottom: 12px; padding-bottom: 8px;">
+                            <h3 style="font-size: 16px;">Ledger Security</h3>
+                            <p style="font-size: 12px;">Real-time hash propagation network</p>
+                        </div>
+                        
+                        <div class="blockchain-nodes">
+                            <div class="node-item">
+                                <span>Kiosk Terminal Local</span>
+                                <div class="node-status"></div>
+                            </div>
+                            <div class="node-item">
+                                <span>Mainnet Kiosk Node-1</span>
+                                <div class="node-status" id="node-1"></div>
+                            </div>
+                            <div class="node-item">
+                                <span>Mainnet Backup Node-2</span>
+                                <div class="node-status" id="node-2"></div>
+                            </div>
+                            <div class="node-item">
+                                <span>Validator consensus Node</span>
+                                <div class="node-status" id="node-3"></div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px; font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                            ⚡ Node synchronization status updates in real-time. If you initiate transactions on the right screen, you will hear a speech guided sequence! Ensure your system audio is enabled.
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-header" style="margin-bottom: 12px; padding-bottom: 8px;">
+                            <h3 style="font-size: 16px;">System Configuration</h3>
+                        </div>
+                        <div class="data-table">
+                            <div class="data-row">
+                                <span class="data-label">Interface Version</span>
+                                <span class="data-value">v2.1 Stable</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">Speech Synthesis</span>
+                                <span class="data-value" style="color: var(--success);">Web Speech API</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">Secure PIN Input</span>
+                                <span class="data-value" style="color: var(--primary);">Cryptographic Crypt</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Interactive Embedded Kiosk Mockup -->
+                <div class="tablet-frame-container">
+                    <div class="tablet-mockup">
+                        <div class="tablet-camera-notch"></div>
+                        <iframe src="v2/index.html" class="tablet-iframe" id="nexa-kiosk-iframe"></iframe>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Core Script Logic for KYC and Presets -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Active State variables
+        let uploadedDoc = null;
+        let uploadedSelfie = null;
+        let webcamStream = null;
+        let selectedDocType = "aadhaar";
+
+        // Navigation switcher
+        function switchView(viewName) {
+            document.querySelectorAll('.app-view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            if (viewName === 'kyc') {
+                document.getElementById('view-kyc').classList.add('active');
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+            } else if (viewName === 'nexa') {
+                document.getElementById('view-nexa').classList.add('active');
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                // Reload iframe to restart voice welcome when opening Kiosk view
+                const iframe = document.getElementById('nexa-kiosk-iframe');
+                iframe.src = iframe.src;
+            }
+        }
+
+        // File upload triggers
+        function triggerFileInput(inputId) {
+            document.getElementById(inputId).click();
+        }
+
+        function triggerSelfieOption() {
+            // Check if webcam is available, otherwise allow image upload
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                openWebcam();
+            } else {
+                triggerFileInput('file-selfie');
+            }
+        }
+
+        // Open user webcam
+        async function openWebcam() {
+            const overlay = document.getElementById('cam-overlay');
+            overlay.style.display = 'block';
+            try {
+                webcamStream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 320, height: 240, facingMode: 'user' }
+                });
+                const videoEl = document.getElementById('video');
+                videoEl.srcObject = webcamStream;
+                videoEl.play();
+                
+                // Draw a simple face landmark overlay for hyper-realistic look!
+                animateFacialLandmarks();
+            } catch (err) {
+                console.error("Webcam open error: ", err);
+                overlay.style.display = 'none';
+                // Fallback to upload
+                triggerFileInput('file-selfie');
+            }
+        }
+
+        // Landmark wireframe drawing on webcam video feed
+        let landmarkAnimFrame;
+        function animateFacialLandmarks() {
+            const canvas = document.getElementById('landmark-canvas');
+            const ctx = canvas.getContext('2d');
+            const video = document.getElementById('video');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            function drawFrame() {
+                if (!webcamStream) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw a mock glowing face outline tracking points
+                ctx.strokeStyle = '#3b82f6';
+                ctx.lineWidth = 1.5;
+                ctx.shadowBlur = 4;
+                ctx.shadowColor = '#3b82f6';
+
+                const cx = canvas.width / 2;
+                const cy = canvas.height / 2;
+                
+                // Draw face oval
+                ctx.beginPath();
+                ctx.ellipse(cx, cy, 60, 80, 0, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Draw points (eyes, eyebrows, nose, mouth)
+                ctx.fillStyle = '#10b981';
+                ctx.shadowColor = '#10b981';
+                const pulse = Math.sin(Date.now() / 150) * 1.5;
+                
+                // Left Eye
+                ctx.beginPath();
+                ctx.arc(cx - 20, cy - 20, 3 + pulse, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Right Eye
+                ctx.beginPath();
+                ctx.arc(cx + 20, cy - 20, 3 + pulse, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Nose Bridge
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - 10);
+                ctx.lineTo(cx, cy + 10);
+                ctx.lineTo(cx - 5, cy + 10);
+                ctx.stroke();
+
+                // Mouth
+                ctx.beginPath();
+                ctx.arc(cx, cy + 30, 15, 0, Math.PI, false);
+                ctx.stroke();
+
+                landmarkAnimFrame = requestAnimationFrame(drawFrame);
+            }
+            drawFrame();
+        }
+
+        function closeCamera(event) {
+            if (event) event.stopPropagation();
+            const overlay = document.getElementById('cam-overlay');
+            overlay.style.display = 'none';
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+                webcamStream = null;
+            }
+            if (landmarkAnimFrame) {
+                cancelAnimationFrame(landmarkAnimFrame);
+            }
+        }
+
+        // Capture selfie from active stream
+        function captureSelfie(event) {
+            if (event) event.stopPropagation();
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 320;
+            canvas.height = video.videoHeight || 240;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            uploadedSelfie = dataUrl;
+
+            // Stop webcam
+            closeCamera();
+
+            // Display preview
+            displayPreview('selfie', dataUrl);
+            checkSubmitStatus();
+        }
+
+        function handleFileSelected(input, type) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (type === 'document') {
+                    uploadedDoc = e.target.result;
+                    displayPreview('document', e.target.result);
+                } else {
+                    uploadedSelfie = e.target.result;
+                    displayPreview('selfie', e.target.result);
+                }
+                checkSubmitStatus();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateDocLabels() {
+            const types = document.getElementsByName('doc-type');
+            for (let t of types) {
+                if (t.checked) {
+                    selectedDocType = t.value;
+                    break;
+                }
+            }
+            
+            const docBoxText = document.getElementById('doc-box-text');
+            const docBoxIcon = document.getElementById('doc-box-icon');
+            
+            if (selectedDocType === 'aadhaar') {
+                docBoxText.textContent = "Upload Aadhaar Card";
+                docBoxIcon.textContent = "id_card";
+            } else if (selectedDocType === 'pan') {
+                docBoxText.textContent = "Upload PAN Card";
+                docBoxIcon.textContent = "badge";
+            } else if (selectedDocType === 'passport') {
+                docBoxText.textContent = "Upload Passport Document";
+                docBoxIcon.textContent = "menu_book";
+            } else if (selectedDocType === 'dl') {
+                docBoxText.textContent = "Upload Driving License";
+                docBoxIcon.textContent = "license";
+            }
+        }
+
+        // Display beautiful image preview inside the upload box
+        function displayPreview(type, imgData) {
+            const container = document.getElementById(`preview-${type}-container`);
+            const parent = document.getElementById(`box-${type}`);
+            
+            parent.classList.add('has-file');
+            container.style.display = 'block';
+            
+            container.innerHTML = `<img src="${imgData}" class="preview-img" alt="${type} preview">`;
+        }
+
+        function checkSubmitStatus() {
+            const fullName = document.getElementById('user-fullname').value.trim();
+            const btnVerify = document.getElementById('btn-verify-trigger');
+            
+            if (fullName && uploadedDoc && uploadedSelfie) {
+                btnVerify.removeAttribute('disabled');
+            } else {
+                btnVerify.setAttribute('disabled', 'true');
+            }
+        }
+
+        // Listen for name typing changes
+        document.getElementById('user-fullname').addEventListener('input', checkSubmitStatus);
+
+        // Scenario Preset Loader for easy testing
+        function loadScenario(type) {
+            // Reset state
+            resetKycForm();
+
+            // Form inputs
+            const nameInput = document.getElementById('user-fullname');
+            
+            // Set values based on selected scenario
+            if (type === 'approved') {
+                nameInput.value = "Rajesh Kumar";
+                selectedDocType = "aadhaar";
+                // Select Aadhaar radio
+                document.getElementsByName('doc-type')[0].checked = true;
+                
+                // SVG prefilled documents for instant zero-config loading
+                uploadedDoc = createMockIdSvg("Rajesh Kumar", "9482-1029-4839", "AADHAAR", "approved");
+                uploadedSelfie = createMockSelfieSvg("approved");
+            } 
+            else if (type === 'review') {
+                nameInput.value = "R. Kumar"; // Small name mismatch
+                selectedDocType = "pan";
+                document.getElementsByName('doc-type')[1].checked = true;
+                
+                uploadedDoc = createMockIdSvg("Rajesh Kumar", "BKP4910C", "PAN CARD", "review");
+                uploadedSelfie = createMockSelfieSvg("review");
+            } 
+            else if (type === 'rejected') {
+                nameInput.value = "Vijay Mallya";
+                selectedDocType = "dl";
+                document.getElementsByName('doc-type')[3].checked = true;
+                
+                uploadedDoc = createMockIdSvg("Amit Shah", "DL-930491", "DRIVING LICENSE", "rejected"); // Major name mismatch & face mismatch
+                uploadedSelfie = createMockSelfieSvg("rejected");
+            }
+
+            updateDocLabels();
+            
+            // Show previews
+            displayPreview('document', uploadedDoc);
+            displayPreview('selfie', uploadedSelfie);
+            
+            // Allow immediate run
+            checkSubmitStatus();
+        }
+
+        // Helper to generate mock document vector data URLs (so no broken external image links)
+        function createMockIdSvg(name, idNumber, docLabel, mode) {
+            let photoColor = "#93c5fd"; // Blue base
+            if (mode === 'review') photoColor = "#fcd34d"; // Yellow base
+            if (mode === 'rejected') photoColor = "#fca5a5"; // Red base
+
+            const svg = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="300" height="180" viewBox="0 0 300 180">
+                    <rect width="300" height="180" rx="12" fill="${mode === 'approved' ? '#1e3a8a' : mode === 'review' ? '#065f46' : '#7f1d1d'}" />
+                    <rect x="10" y="10" width="280" height="160" rx="8" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2" />
+                    <!-- ID header -->
+                    <text x="24" y="32" font-family="'Outfit', sans-serif" font-size="12" fill="rgba(255,255,255,0.7)" font-weight="bold">${docLabel}</text>
+                    <text x="240" y="32" font-family="'Outfit', sans-serif" font-size="10" fill="rgba(255,255,255,0.5)">GOVT INTEGRITY</text>
+                    
+                    <!-- Portrait -->
+                    <rect x="24" y="48" width="60" height="75" rx="6" fill="${photoColor}" />
+                    <!-- Graphic face avatar inside document -->
+                    <circle cx="54" cy="78" r="14" fill="rgba(255,255,255,0.4)" />
+                    <path d="M40,110 C40,94 68,94 68,110 Z" fill="rgba(255,255,255,0.5)" />
+
+                    <!-- Details -->
+                    <text x="96" y="64" font-family="'Inter', sans-serif" font-size="10" fill="rgba(255,255,255,0.6)">NAME / பெயர்</text>
+                    <text x="96" y="78" font-family="'Inter', sans-serif" font-size="11" fill="white" font-weight="bold">${name}</text>
+                    
+                    <text x="96" y="100" font-family="'Inter', sans-serif" font-size="10" fill="rgba(255,255,255,0.6)">DOCUMENT NUMBER</text>
+                    <text x="96" y="114" font-family="'Inter', sans-serif" font-size="11" fill="white" font-weight="bold" letter-spacing="1">${idNumber}</text>
+
+                    <!-- Footer line -->
+                    <text x="24" y="150" font-family="'Inter', sans-serif" font-size="8" fill="rgba(255,255,255,0.4)">VERIFICATION CRYPTO INTEGRITY HASH: SHA-256#0481239</text>
+                </svg>
+            `;
+            return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+        }
+
+        // Helper to generate mock selfie photo data URL
+        function createMockSelfieSvg(mode) {
+            let bg = "#1e293b";
+            let faceColor = "#60a5fa";
+            if (mode === 'review') faceColor = "#fbbf24";
+            if (mode === 'rejected') faceColor = "#f87171"; // Red face (simulating mismatch/another person)
+
+            const svg = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+                    <rect width="200" height="200" fill="${bg}" />
+                    <circle cx="100" cy="85" r="35" fill="${faceColor}" />
+                    <path d="M50,170 C50,130 150,130 150,170 Z" fill="${faceColor}" />
+                    <!-- Liveness details overlays -->
+                    <circle cx="100" cy="100" r="85" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="6,6" />
+                    <text x="20" y="30" font-family="monospace" font-size="9" fill="#10b981">ANTI-SPOOF: ACTIVE</text>
+                    <text x="20" y="42" font-family="monospace" font-size="9" fill="#10b981">FPS: 30.00</text>
+                </svg>
+            `;
+            return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+        }
+
+        // Run client side simulated high fidelity AI pipeline
+        function runKycPipeline() {
+            const formView = document.getElementById('kyc-form-view');
+            const procView = document.getElementById('kyc-processing-view');
+            
+            formView.style.display = 'none';
+            procView.style.display = 'flex';
+            
+            // Set avatars
+            document.getElementById('proc-img-doc').src = uploadedDoc;
+            document.getElementById('proc-img-selfie').src = uploadedSelfie;
+
+            // Console simulation logs
+            const logsBox = document.getElementById('console-logs');
+            logsBox.innerHTML = '';
+            
+            const nameInput = document.getElementById('user-fullname').value.trim();
+            const consoleSteps = [
+                { text: `[SYSTEM] Initializing Automated KYC Core for ${nameInput}...`, type: 'info', wait: 200 },
+                { text: `[RUNNING] Localizing credential payload structures...`, type: 'info', wait: 500 },
+                { text: `[OCR] Running Neural OCR Model on loaded ID document...`, type: 'info', wait: 1100 },
+                { text: `[OCR-SUCCESS] Extracted document title: "${selectedDocType.toUpperCase()}"`, type: 'success', wait: 1400 },
+                { text: `[OCR-SUCCESS] Parsed Name Field: "RAJESH KUMAR"`, type: 'success', wait: 1700 },
+                { text: `[OCR-SUCCESS] ID Number Field: "9482-1029-4839"`, type: 'success', wait: 1900 },
+                { text: `[BIOMETRICS] Mapping face landmarks (128-dimensional encodings)...`, type: 'info', wait: 2400 },
+                { text: `[BIOMETRICS] Face detected inside card frame [34, 48, 94, 123]`, type: 'success', wait: 2700 },
+                { text: `[BIOMETRICS] Face detected inside live webcam stream [46, 50, 140, 172]`, type: 'success', wait: 2900 },
+                { text: `[RISK-ENGINE] Computing name Levenshtein distance: comparing "${nameInput.toUpperCase()}" with "RAJESH KUMAR"`, type: 'info', wait: 3400 },
+                { text: `[RISK-ENGINE] Biometric Vector distance comparison: evaluating landmark euclidean thresholds...`, type: 'info', wait: 3900 },
+                { text: `[RISK-ENGINE] Execution completed. Generating final cryptographic audit report...`, type: 'success', wait: 4400 }
+            ];
+
+            // Render log steps consecutively
+            consoleSteps.forEach(step => {
+                setTimeout(() => {
+                    const line = document.createElement('div');
+                    line.className = `console-line ${step.type}`;
+                    line.innerHTML = `
+                        <span class="material-symbols-outlined" style="font-size:14px; margin-top:2px;">
+                            ${step.type === 'success' ? 'check_circle' : step.type === 'warn' ? 'warning' : 'terminal'}
+                        </span>
+                        <span>${step.text}</span>
+                    `;
+                    logsBox.appendChild(line);
+                    logsBox.scrollTop = logsBox.scrollHeight;
+                }, step.wait);
+            });
+
+            // End processing and render full dashboard dossier
+            setTimeout(() => {
+                renderAuditReport();
+            }, 4900);
+        }
+
+        // Calculate and render report based on input variations
+        function renderAuditReport() {
+            // Hide processing, show results
+            document.getElementById('kyc-processing-view').style.display = 'none';
+            document.getElementById('kyc-form-view').style.display = 'block';
+            
+            document.getElementById('result-sidebar-placeholder').style.display = 'none';
+            document.getElementById('result-sidebar-data').style.display = 'block';
+
+            // Risk Scoring Engine logic based on actual user input name
+            const providedName = document.getElementById('user-fullname').value.trim().toLowerCase();
+            
+            let nameMatchScore = 0; // 0 is perfect, higher is worse Levenshtein
+            let nameRulePass = true;
+            let extractedName = "RAJESH KUMAR";
+
+            // If name is Rajesh Kumar (or very close), low risk. Else we vary it
+            if (providedName === 'rajesh kumar') {
+                nameMatchScore = 100;
+            } else if (providedName.includes('rajesh') || providedName.includes('kumar') || providedName.includes('r.')) {
+                nameMatchScore = 75; // Medium mismatch
+            } else {
+                nameMatchScore = 20; // Major mismatch
+                nameRulePass = false;
+                extractedName = "AMIT SHAH";
+            }
+
+            // Document type parameters
+            let extractedID = "9482-1029-4839";
+            if (selectedDocType === 'pan') extractedID = "BKP4910C";
+            if (selectedDocType === 'passport') extractedID = "Z-9402941";
+            if (selectedDocType === 'dl') extractedID = "DL-930491";
+
+            // Determine Overall Risk Score based on scenario
+            let finalRiskScore = 12; // default safe
+            let decision = "AUTO APPROVED";
+            let decisionClass = "approved";
+            let decisionIcon = "verified_user";
+
+            let faceSimilarity = "96.4% Match";
+            let faceMatchPass = true;
+            let livenessPass = true;
+            let expiryPass = true;
+
+            // Scenario calculations
+            if (nameMatchScore === 100) {
+                finalRiskScore = 8 + Math.floor(Math.random() * 5); // 8-12
+                decision = "AUTO APPROVED";
+                decisionClass = "approved";
+                decisionIcon = "check_circle";
+            } else if (nameMatchScore === 75) {
+                finalRiskScore = 48 + Math.floor(Math.random() * 8); // 48-56
+                decision = "MANUAL REVIEW";
+                decisionClass = "review";
+                decisionIcon = "warning";
+                faceSimilarity = "84.2% Match";
+            } else {
+                finalRiskScore = 88 + Math.floor(Math.random() * 6); // 88-94
+                decision = "AUTO REJECTED";
+                decisionClass = "rejected";
+                decisionIcon = "report";
+                faceSimilarity = "12.8% Mismatch";
+                faceMatchPass = false;
+                livenessPass = false;
+                expiryPass = false;
+            }
+
+            // Update UI elements
+            document.getElementById('extracted-name-val').textContent = extractedName;
+            document.getElementById('extracted-id-val').textContent = extractedID;
+            document.getElementById('face-similarity-val').textContent = faceSimilarity;
+            document.getElementById('liveness-val').textContent = livenessPass ? "Verified Genuine (99.8%)" : "FAILED (Spoof Detected)";
+
+            // Update status badge
+            const badge = document.getElementById('dossier-status-badge');
+            badge.className = `status-header-badge ${decisionClass}`;
+            document.getElementById('dossier-status-icon').textContent = decisionIcon;
+            document.getElementById('dossier-status-text').textContent = decision;
+
+            // Update Risk circular gauge score
+            document.getElementById('dossier-score-text').textContent = finalRiskScore;
+            
+            // SVG dashoffset calculation: 377 is total circumference (r=60, 2 * PI * r = 376.99)
+            const gaugeOffset = 377 - (377 * finalRiskScore / 100);
+            const fillCircle = document.getElementById('dossier-gauge-fill');
+            fillCircle.style.strokeDashoffset = gaugeOffset;
+            fillCircle.className = `gauge-fill ${finalRiskScore <= 30 ? 'low' : finalRiskScore <= 70 ? 'medium' : 'high'}`;
+
+            // Update Rule list icons
+            updateRuleStatus('rule-name', nameRulePass ? 'pass' : 'fail');
+            updateRuleStatus('rule-face', faceMatchPass ? 'pass' : 'fail');
+            updateRuleStatus('rule-expiry', expiryPass ? 'pass' : 'fail');
+            updateRuleStatus('rule-liveness', livenessPass ? 'pass' : 'fail');
+
+            // Show "Proceed to NexaFi" button only if approved
+            const btnNexa = document.getElementById('btn-next-nexa-step');
+            if (decision === 'AUTO APPROVED') {
+                btnNexa.style.display = 'flex';
+            } else {
+                btnNexa.style.display = 'none';
+            }
+        }
+
+        function updateRuleStatus(ruleId, status) {
+            const ruleElement = document.getElementById(ruleId);
+            const icon = ruleElement.querySelector('span');
+            
+            ruleElement.className = `checklist-item ${status}`;
+            if (status === 'pass') {
+                icon.textContent = "check_circle";
+                icon.style.color = "var(--success)";
+            } else {
+                icon.textContent = "cancel";
+                icon.style.color = "var(--danger)";
+            }
+        }
+
+        // Reset Sandbox inputs
+        function resetKycForm() {
+            uploadedDoc = null;
+            uploadedSelfie = null;
+            closeCamera();
+            
+            // Reset fields
+            document.getElementById('user-fullname').value = "";
+            document.getElementById('file-document').value = "";
+            document.getElementById('file-selfie').value = "";
+
+            // Reset previews
+            document.getElementById('preview-document-container').style.display = 'none';
+            document.getElementById('preview-document-container').innerHTML = '';
+            document.getElementById('box-document').classList.remove('has-file');
+
+            document.getElementById('preview-selfie-container').style.display = 'none';
+            document.getElementById('preview-selfie-container').innerHTML = '';
+            document.getElementById('box-selfie').classList.remove('has-file');
+
+            // Reset Right panel
+            document.getElementById('result-sidebar-placeholder').style.display = 'flex';
+            document.getElementById('result-sidebar-data').style.display = 'none';
+
+            checkSubmitStatus();
+            updateDocLabels();
+        }
+
+        // Sync node pulse effect for NexaFi Sidebar
+        setInterval(() => {
+            const nodeIds = ['node-1', 'node-2', 'node-3'];
+            const randomNode = nodeIds[Math.floor(Math.random() * nodeIds.length)];
+            const el = document.getElementById(randomNode);
+            if (el) {
+                el.style.opacity = '0.4';
+                setTimeout(() => { el.style.opacity = '1'; }, 300);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

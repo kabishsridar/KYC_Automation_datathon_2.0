@@ -1,0 +1,6 @@
+# NexaFi v2 Dependencies
+requests==2.31.0
+uvicorn==0.27.0
+fastapi==0.109.0
+python-multipart==0.0.7
+# Add other dependencies here if backend integration is scaled.

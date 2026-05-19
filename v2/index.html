@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NexaFi - Blockchain Secured Voice Banking</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    
+    <!-- Modular Styles -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/blockchain.css">
+</head>
+<body>
+    
+    <header class="top-bar">
+        <div class="logo">
+            <span class="material-symbols-outlined logo-icon">shield_lock</span>
+            <div class="logo-text">NexaFi <small>BANKING INFRA</small></div>
+        </div>
+        <div id="blockchain-status" class="security-badge pulse">
+            <span class="material-symbols-outlined">sync</span>
+            SYNCING LEDGER...
+        </div>
+        <div class="lang-toggle">
+            <button id="btn-en" class="lang-btn active" onclick="setLanguage('en')">EN</button>
+            <button id="btn-ta" class="lang-btn" onclick="setLanguage('ta')">தமிழ்</button>
+        </div>
+    </header>
+
+    <div id="voice-indicator" class="voice-bar">
+        <div class="mic-icon pulse"><span class="material-symbols-outlined">mic</span></div>
+        <div id="voice-text" class="voice-text">Welcome. Choose a service.</div>
+    </div>
+
+    <main id="app-content">
+        <!-- SCREEN: HOME -->
+        <section id="screen-home" class="screen active">
+            <div class="grid-2x2" style="gap: 20px;">
+                <button class="action-card" onclick="startFlow('send-money')">
+                    <span class="material-symbols-outlined icon-large" style="color: var(--primary);">send</span>
+                    <h2>Send Money <small>பணம் அனுப்ப</small></h2>
+                </button>
+                <button class="action-card" onclick="startFlow('deposit')">
+                    <span class="material-symbols-outlined icon-large" style="color: var(--success);">account_balance</span>
+                    <h2>Deposit Cash <small>பணம் வை</small></h2>
+                </button>
+                <button class="action-card" onclick="startFlow('balance')">
+                    <span class="material-symbols-outlined icon-large" style="color: var(--warning);">account_balance_wallet</span>
+                    <h2>Check Balance <small>இருப்பு</small></h2>
+                </button>
+                <button class="action-card" onclick="startFlow('history')">
+                    <span class="material-symbols-outlined icon-large" style="color: var(--primary);">receipt_long</span>
+                    <h2>History <small>பரிவர்த்தனை</small></h2>
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN: SEND MONEY FLOW -->
+        <section id="screen-send-money" class="screen">
+            <button class="back-btn" onclick="goHome()"><span class="material-symbols-outlined">arrow_back</span> Back / பின் செல்</button>
+            
+            <div id="send-step-1" class="step active">
+                <h1 class="step-title">Select Transfer Method</h1>
+                <div class="grid-2x2" style="height: auto; gap:16px; margin-bottom: 24px;">
+                    <button class="action-card small" style="padding: 20px;" onclick="nextSendStep(2)">
+                        <span class="material-symbols-outlined icon-large">account_balance</span>
+                        <h3>Account + IFSC</h3>
+                    </button>
+                    <button class="action-card small" style="padding: 20px;" onclick="nextSendStep(2)">
+                        <span class="material-symbols-outlined icon-large">alternate_email</span>
+                        <h3>UPI ID</h3>
+                    </button>
+                </div>
+                <div class="action-card" style="margin-bottom: 24px;">
+                    <span class="material-symbols-outlined icon-large">qr_code_scanner</span>
+                    <h3>Scan QR Code</h3>
+                </div>
+            </div>
+
+            <div id="send-step-2" class="step">
+                <h1 class="step-title">Enter Receiver Details</h1>
+                <input type="text" id="send-receiver" class="mega-input" placeholder="Enter Number / ID" value="9876543210@upi">
+                <button class="btn-primary mt-4" onclick="nextSendStep(3)">Next Step / அடுத்த கட்டம் <span class="material-symbols-outlined">arrow_forward</span></button>
+            </div>
+
+            <div id="send-step-3" class="step">
+                <h1 class="step-title">Enter Amount</h1>
+                <div class="amount-presets">
+                    <button class="preset-btn" onclick="selectAmount(500, event)">₹ 500</button>
+                    <button class="preset-btn" onclick="selectAmount(1000, event)">₹ 1000</button>
+                    <button class="preset-btn" onclick="selectAmount(2000, event)">₹ 2000</button>
+                </div>
+                <input type="number" id="send-amount" class="mega-input mt-2" placeholder="₹ Custom Amount">
+                <button class="btn-primary mt-4" onclick="nextSendStep(4)">Confirm Amount</button>
+            </div>
+
+            <div id="send-step-4" class="step center">
+                <h1 class="step-title">Confirm Transfer</h1>
+                <div class="confirm-card">
+                    <p class="text-secondary">Sending to</p>
+                    <h2 id="confirm-receiver">Rajesh Kumar</h2>
+                    <p class="text-secondary mt-2">Amount</p>
+                    <h1 id="confirm-amount" class="text-primary mt-1">₹ 0</h1>
+                    <div class="blockchain-meta mt-2">
+                        <span class="material-symbols-outlined">database</span> NETWORK: MAINNET-v3.2
+                    </div>
+                </div>
+                <button class="btn-primary mt-4" onclick="nextSendStep(5)">Securely Proceed</button>
+            </div>
+
+            <div id="send-step-ledger" class="step center">
+                <div class="ledger-anim">
+                    <div class="node"></div>
+                    <div class="node"></div>
+                    <div class="node"></div>
+                </div>
+                <h1 class="step-title">Verifying on Ledger</h1>
+                <p class="text-secondary">Calculating Hash: <span id="current-hash" class="hash-text">0x74a...f3e</span></p>
+                <div class="progress-bar-container mt-4">
+                    <div id="ledger-progress" class="progress-bar"></div>
+                </div>
+            </div>
+
+            <div id="send-step-5" class="step center">
+                <div class="security-shield pulse"><span class="material-symbols-outlined">key</span></div>
+                <h1 class="step-title mt-2">Enter Secure PIN</h1>
+                <p class="text-secondary mb-4">Cryptographic Pin Entry (Silent)</p>
+                <input type="password" id="send-pin" class="mega-input text-center" maxlength="4" placeholder="* * * *">
+                <button class="btn-primary mt-4" onclick="completeSend()">Digitally Sign</button>
+            </div>
+
+            <div id="send-step-6" class="step center">
+                <span class="material-symbols-outlined icon-huge" style="color: var(--success);">verified_user</span>
+                <h1 class="step-title mt-2 text-success">Transfer Finalized</h1>
+                <div class="hash-box" id="final-hash-display">HASH: 0x82...129</div>
+                <p class="mt-2 text-secondary">Verified on Blockchain (Block #842,938)</p>
+                <button class="btn-secondary mt-4" onclick="goHome()">Back to Home</button>
+            </div>
+        </section>
+
+        <!-- SCREEN: DEPOSIT FLOW -->
+        <section id="screen-deposit" class="screen">
+            <button class="back-btn" onclick="goHome()"><span class="material-symbols-outlined">arrow_back</span> Back</button>
+            
+            <div id="dep-step-1" class="step active">
+                <h1 class="step-title">Enter Deposit Amount</h1>
+                <div class="amount-presets">
+                    <button class="preset-btn" onclick="selectDepAmount(500, event)">₹ 500</button>
+                    <button class="preset-btn" onclick="selectDepAmount(1000, event)">₹ 1000</button>
+                    <button class="preset-btn" onclick="selectDepAmount(5000, event)">₹ 5000</button>
+                </div>
+                <input type="number" id="dep-amount" class="mega-input mt-2" placeholder="₹ Custom Amount">
+                <button class="btn-primary mt-4" onclick="nextDepStep(2)">Generate Request</button>
+            </div>
+
+            <div id="dep-step-2" class="step center">
+                <h1 class="step-title">Hand Cash to Agent</h1>
+                <p class="text-secondary mb-4">Agent scan confirmation required.</p>
+                <div class="qr-box">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MVPDeposit" alt="QR" width="200" height="200">
+                </div>
+                <div class="spinner mt-4"></div>
+            </div>
+
+            <div id="dep-step-3" class="step center">
+                <span class="material-symbols-outlined icon-huge" style="color: var(--success);">account_balance</span>
+                <h1 class="step-title mt-2 text-success">Ledger Updated</h1>
+                <p class="mt-2 text-secondary">Cash deposited & hashed on network.</p>
+                <div class="hash-box">HASH: 0x91...44a</div>
+                <button class="btn-secondary mt-4" onclick="goHome()">Back to Home</button>
+            </div>
+        </section>
+
+        <!-- SCREEN: BALANCE -->
+        <section id="screen-balance" class="screen">
+            <button class="back-btn" onclick="goHome()"><span class="material-symbols-outlined">arrow_back</span> Back / பின் செல்</button>
+            
+            <div id="bal-step-1" class="step active center">
+                <div class="security-shield pulse"><span class="material-symbols-outlined">lock</span></div>
+                <h1 class="step-title mt-2">Verify Identity</h1>
+                <p class="text-secondary mb-4">Enter 4-digit PIN to see balance</p>
+                <input type="password" id="bal-pin" class="mega-input text-center" maxlength="4" placeholder="* * * *">
+                <button class="btn-primary mt-4" onclick="verifyBalancePin()">Unlock Balance</button>
+            </div>
+
+            <div id="bal-step-2" class="step center">
+                <span class="material-symbols-outlined icon-huge" style="color: var(--warning);">account_balance_wallet</span>
+                <h2 class="text-secondary mt-4">Safe Wallet Balance</h2>
+                <h1 class="balance-mega mt-2" id="display-balance">₹ 12,450</h1>
+                <button class="btn-secondary mt-4" onclick="goHome()">Back to Home</button>
+            </div>
+        </section>
+
+        <!-- SCREEN: HISTORY -->
+        <section id="screen-history" class="screen">
+            <button class="back-btn" onclick="goHome()"><span class="material-symbols-outlined">arrow_back</span> Back</button>
+            <h1 class="step-title">Immutable Audit Log</h1>
+            <div class="history-list mt-4">
+                <div class="history-item">
+                    <div class="h-icon sent"><span class="material-symbols-outlined">upload</span></div>
+                    <div class="h-details">
+                        <span class="h-title">Hashed Transfer</span>
+                        <span class="h-date">Today • Block: 842,938</span>
+                    </div>
+                    <div class="h-amount negative">- ₹ 500</div>
+                </div>
+                <!-- More items can be added here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modular Scripts -->
+    <script src="js/voice-assistant.js"></script>
+    <script src="js/blockchain-ledger.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/flows.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

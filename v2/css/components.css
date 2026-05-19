@@ -1,0 +1,86 @@
+/* Core Components: Buttons, Cards, Inputs */
+.grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; height: 100%; }
+
+.action-card {
+  background: var(--surface-color); border: 1px solid var(--border); backdrop-filter: blur(20px); border-radius: 16px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); padding: 24px;
+}
+.action-card:hover {
+  transform: translateY(-4px); border-color: var(--primary); background: rgba(139, 92, 246, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.action-card:active { transform: scale(0.98); }
+
+.icon-large { font-size: 2.5rem; text-shadow: 0 0 15px rgba(255,255,255,0.05); }
+.icon-huge { font-size: 4rem; }
+
+.action-card h2, .action-card h3 { font-size: 1.1rem; color: var(--text-main); text-align: center; font-weight: 600; }
+.action-card small {
+  display: block; font-size: 0.9rem; color: var(--text-muted); font-weight: 400; margin-top: 4px;
+}
+
+.step { display: none; height: 100%; flex-direction: column; max-width: 800px; margin: 0 auto; }
+.step.active { display: flex; }
+.step-title { font-size: 1.5rem; margin-bottom: 24px; color: var(--text-main); font-weight: 700; text-align: center; }
+
+.mega-input {
+  width: 100%; font-size: 1.25rem; padding: 16px 24px; border: 1px solid var(--border); border-radius: 12px;
+  outline: none; background: rgba(0,0,0,0.3); color: var(--text-main); text-align: center; transition: all 0.2s;
+  font-weight: 500;
+}
+.mega-input:focus { border-color: var(--accent); box-shadow: 0 0 20px rgba(6, 182, 212, 0.1); }
+
+.amount-presets { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.preset-btn {
+  padding: 16px 12px; font-size: 1rem; font-weight: 600; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+  border-radius: 12px; color: var(--text-main); cursor: pointer; transition: 0.2s;
+}
+.preset-btn:active, .preset-btn.selected {
+  background: var(--primary); border-color: var(--primary); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.btn-primary, .btn-secondary {
+  width: 100%; padding: 16px; font-size: 1rem; font-weight: 600; border-radius: 12px; border: none;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+}
+.btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
+.btn-primary:active { transform: translateY(2px); }
+.btn-secondary { background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border); }
+
+.back-btn {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px;
+  font-size: 1.1rem; font-weight: 600; color: var(--text-main);
+  display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 12px 20px; 
+  align-self: flex-start; margin-bottom: 24px;
+}
+
+.confirm-card {
+  background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 16px; padding: 32px; width: 100%; max-width: 500px; backdrop-filter: blur(10px);
+}
+#confirm-receiver { font-size: 1.5rem; margin-top: 4px; font-weight: 700; }
+#confirm-amount { font-size: 2.5rem; color: var(--accent); font-weight: 800; }
+
+.balance-mega { font-size: 3.5rem; color: var(--accent); font-weight: 800; text-shadow: 0 0 30px rgba(6, 182, 212, 0.2); }
+
+.history-list { display: flex; flex-direction: column; gap: 16px; }
+.history-item { 
+  background: var(--surface-color); padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 16px; 
+  border: 1px solid var(--border); transition: 0.2s; 
+}
+.history-item:hover { border-color: var(--primary); background: rgba(255,255,255,0.02); }
+.h-icon { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.h-icon span { font-size: 1.25rem; }
+.h-icon.sent { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+.h-icon.received { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.h-icon.deposit { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+.h-details { flex: 1; text-align: left; }
+.h-title { display: block; font-size: 1rem; font-weight: 600; }
+.h-date { font-size: 0.85rem; color: var(--text-muted); }
+.h-amount { font-size: 1.1rem; font-weight: 700; width: 120px; text-align: right; }
+
+.qr-box { background: white; padding: 20px; border-radius: 32px; border: 8px solid var(--surface-color); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+.spinner {
+  width: 60px; height: 60px; border: 6px solid rgba(255,255,255,0.05); border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 1s linear infinite; margin: 0 auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
