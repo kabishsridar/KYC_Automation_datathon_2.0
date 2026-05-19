@@ -7,3 +7,10 @@ __pycache__/
 dist/
 build/
 backend/.pytest_cache/
+New folder (2).zip
+**/node_modules/
+**/venv/
+**/__pycache__/
+**/*.pyc
+**/cursor/
+
